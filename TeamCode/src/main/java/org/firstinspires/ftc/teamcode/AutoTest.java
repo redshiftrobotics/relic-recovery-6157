@@ -1,98 +1,269 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.graphics.Color;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.NormalizedRGBA;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
 
-/**
- * Created by Luca Sandoval on 10/18/2017.
- */
-@Autonomous (name="6157Auto")
+@Autonomous(name = "Auto Julian")
 
 public class AutoTest extends LinearOpMode {
 
-     ColorSensor colorSensor;
-    private DcMotor motor1 = null;
-    private DcMotor motor2 = null;
-    private DcMotor motor3 = null;
-    private Servo Servo1 = null;
-
+    ColorSensor colorSensor;
+    private DcMotor leftMotor = null;
+    private DcMotor rightMotor = null;
+    private DcMotor wheels = null;
+    private Servo jewelKicker = null;
+    BNO055IMU imu;
 
 
     @Override
     public void runOpMode() throws InterruptedException {
 
+        String us = null;
+        int spot = 0;
+
+
         colorSensor = hardwareMap.get(ColorSensor.class, "color_sensor");
 
 
+        leftMotor = hardwareMap.dcMotor.get("LeftMotor");
+        rightMotor = hardwareMap.dcMotor.get("RightMotor");
+        leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        wheels = hardwareMap.dcMotor.get("Wheels");
+        jewelKicker = hardwareMap.servo.get("Jewel_Kicker");
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
 
-        motor1 = hardwareMap.dcMotor.get("LeftMotor");
-        motor2 = hardwareMap.dcMotor.get("RightMotor");
-        motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motor3 = hardwareMap.dcMotor.get("Wheels");
-        Servo1 = hardwareMap.servo.get("Jewel_Kicker");
+        //initialize imu
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        imu.initialize(parameters);
+
+        if (gamepad1.right_bumper) {
+            us = "blue";
+            telemetry.log().add("Our team is Blue");
+
+        }
+        if (gamepad1.left_bumper) {
+            us = "red";
+            telemetry.log().add("Our team is Red");
+        }
+        telemetry.update();
+
+        if (gamepad1.a) {
+            spot = 1;
+            telemetry.log().add("Our spot is 1");
+        }
+        if (gamepad1.b) {
+            spot = 2;
+            telemetry.log().add("Our spot is 2");
+        }
+        if (gamepad1.x) {
+            spot = 3;
+            telemetry.log().add("Our spot is 3");
+        }
+        if (gamepad1.y) {
+            spot = 4;
+            telemetry.log().add("Our spot is 4");
+        }
 
         waitForStart();
-        //Move sensor downw
-        while(opModeIsActive()) {
+
+        while (opModeIsActive()) {
 
 
-
-            telemetry.addData("Red  ", colorSensor.red());
-            telemetry.addData("Blue ", colorSensor.blue());
-            telemetry.addData("Color is blue: ", colorSensor.blue() > colorSensor.red());
-
-            if (colorSensor.blue() > colorSensor.red()) {
+            jewelKicker.setPosition(0.5);
+            telemetry.log().add("Reading Color..." + colorSensor.toString());
 
 
-            } else {
+            if (spot == 2) {
+                telemetry.log().add("Pressed A");
+
+                if (us == "red") {
+                    if (colorSensor.blue() > colorSensor.red()) {
+                        telemetry.log().add("We are Red. Seeing Blue. Hitting Blue.");
+                        rotate(+5);
+                        rotate(-5);
+                    } else {
+                        telemetry.log().add("We are Red. Seeing Red. Hitting Blue.");
+                        rotate(-5);
+                        rotate(+5);
+                    }
+
+                } else {
+                    if (colorSensor.blue() > colorSensor.red()) {
+                        telemetry.log().add("We are Blue. Seeing Blue. Hitting Red");
+                        rotate(-5);
+                        rotate(+5);
+                    } else {
+                        telemetry.log().add("We are Blue. Seeing Red. Hitting Red");
+                        rotate(+5);
+                        rotate(-5);
+                    }
+                }
+                telemetry.update();
+
+                //raise the jewel kicker
+
+                jewelKicker.setPosition(0);
+
+                //look towards the glyf pit
+
+                rotate(-10);
+
+                //move 1 yard forward
+
+                move(36);
+
+                //push out
+
+                wheels.setPower(-1);
+
+                //rotate towards the block pile
+
+                rotate(-140);
+
+                //start sucking in
+
+                wheels.setPower(1);
+
+                //move 1.5 yards
+
+                move(54);
+
+                //stop sucking in
+
+                wheels.setPower(0);
+
+                //turn back around
+
+                rotate(140);
+
+                //move 1.5 yards
+
+                move(54);
+
+                //push out the block
+
+                wheels.setPower(-1);
+                sleep(500);
+                wheels.setPower(0);
+
+                //park in the glyf holder
+
+                leftMotor.setPower(0);
+                rightMotor.setPower(0);
+                wheels.setPower(0);
 
 
+                telemetry.update();
             }
 
+            if (spot == 1) {
+                telemetry.log().add("Pressed A");
 
-            //Move based off result and bring sensor back up
+                if (us == "red") {
+                    if (colorSensor.blue() > colorSensor.red()) {
+                        telemetry.log().add("We are Red. Seeing Blue. Hitting Blue.");
+                        rotate(+5);
+                        rotate(-5);
+                    } else {
+                        telemetry.log().add("We are Red. Seeing Red. Hitting Blue.");
+                        rotate(-5);
+                        rotate(+5);
+                    }
 
-            //motor1.setPower(-1);
-            // motor2.setPower(1);
+                } else {
+                    if (colorSensor.blue() > colorSensor.red()) {
+                        telemetry.log().add("We are Blue. Seeing Blue. Hitting Red");
+                        rotate(-5);
+                        rotate(+5);
+                    } else {
+                        telemetry.log().add("We are Blue. Seeing Red. Hitting Red");
+                        rotate(+5);
+                        rotate(-5);
+                    }
+                }
+                telemetry.update();
 
-            // sleep(2500);
+                //raise the jewel kicker
 
-            // motor1.setPower(1);
-            // motor2.setPower(-1);
-            // motor3.setPower(1);
+                jewelKicker.setPosition(0);
 
-            // sleep(500);
+                //look towards the glyf pit
 
-            // motor1.setPower(-1);
-            // motor2.setPower(1);
-            // motor3.setPower(1);
+                rotate(-10);
 
-            //  sleep(550);
+                //move 1 yard forward
 
-//        motor1.setPower(1);
-            //      motor2.setPower(-1);
-            //    motor3.setPower(1);
+                move(36);
 
-            // sleep(300);
+                //push out
 
-            //motor1.setPower(0);
-            //motor2.setPower(0);
-            //motor3.setPower(0);
+                wheels.setPower(-1);
 
-            // Read the sensor
+                //rotate towards the block pile
+
+                rotate(-140);
+
+                //start sucking in
+
+                wheels.setPower(1);
+
+                //move 1.5 yards
+
+                move(54);
+
+                //stop sucking in
+
+                wheels.setPower(0);
+
+                //turn back around
+
+                rotate(140);
+
+                //move 1.5 yards
+
+                move(54);
+
+                //push out the block
+
+                wheels.setPower(-1);
+                sleep(500);
+                wheels.setPower(0);
+
+                //park in the glyf holder
+
+                leftMotor.setPower(0);
+                rightMotor.setPower(0);
+                wheels.setPower(0);
 
 
-
-            telemetry.update();
+                telemetry.update();
+            }
         }
     }
+
+    private void rotate(int degrees) {
+        while (Math.abs(imu.getAngularOrientation().firstAngle + degrees) > 0.4) {
+            leftMotor.setPower(imu.getAngularOrientation().firstAngle / 40);
+            rightMotor.setPower(-(imu.getAngularOrientation().firstAngle / 40));
+        }
+    }
+
+    private void move(int inches) {
+        int ticsToMove = inches * (int) (28.662420382165605);
+        while (leftMotor.getCurrentPosition() <= ticsToMove) {
+            leftMotor.setPower(1);
+            rightMotor.setPower(1);
+            idle();
+        }
+    }
+
+
 }
