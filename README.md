@@ -1,3 +1,6 @@
+# THIS REPOSITORY HAS BEEN ARCHIVED
+## As 6157 Zenith's 2017-2018 (Relic Recovery) season has ended, this repository has been archived.
+
 ## Welcome!
 This GitHub repository contains the source code that is used to build an Android app to control a *FIRST* Tech Challenge competition robot.  To use this SDK, download/clone the entire project to your local computer.
 
